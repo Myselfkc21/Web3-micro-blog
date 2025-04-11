@@ -71,7 +71,7 @@ export const TwitterProvider = ({ children }) => {
     // console.log("userWalletAddress:" + userWalletAddress);
     try {
       const userDoc = {
-        _type: "users",
+        _type: "user",
         _id: userWalletAddress,
         userName: "Unkown",
         walletAddress: userWalletAddress,

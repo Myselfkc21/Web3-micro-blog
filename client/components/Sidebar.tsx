@@ -1,9 +1,17 @@
 "use client";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { TwitterContext } from "@/app/context/TwitterContext";
+import Modal from "react-modal";
+import ProfileImageMinter from "./MintingModel/ProfileImageMinter";
+import { customStyles } from "@/lib/constants";
+
+// Set the app element for react-modal
+if (typeof window !== 'undefined') {
+  Modal.setAppElement('body');
+}
 
 interface SidebarItem {
   label: string;
@@ -17,6 +25,23 @@ export default function Sidebar() {
   const currentAccount = context?.currentAccount || "";
   const currentUser = context?.currentUser || {};
   const getCurrentUserDetails = context?.getCurrentUserDetails || (() => {});
+  const router = useRouter();
+  const [isMintModalOpen, setIsMintModalOpen] = useState(false);
+  
+  // Check URL parameters on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const mintParam = urlParams.get('mint');
+      setIsMintModalOpen(!!mintParam);
+    }
+  }, []);
+  
+  // Handle modal close
+  const handleCloseModal = () => {
+    setIsMintModalOpen(false);
+    router.push(pathname);
+  };
 
   // Fetch user details when component mounts
   useEffect(() => {
@@ -135,6 +160,13 @@ export default function Sidebar() {
           </div>
         </div>
       </div>
+      <Modal
+        isOpen={isMintModalOpen}
+        onRequestClose={handleCloseModal}
+        style={customStyles}
+      >
+        <ProfileImageMinter />
+      </Modal>
     </aside>
   );
 }
